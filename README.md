@@ -2,7 +2,7 @@
 
 ## Preparation
 
-1. download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com)
+1. download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads)
 2. run this script with ISO file as parameter (you probably need sudo rights to loop mount)
 3. the *kernel* and *initramfs* (including ISO) will copied to sub-directory *pxeboot*
 
@@ -19,3 +19,5 @@
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=524288
             initrd proxmox/$version/initrd.img splash=verbose
     ```
+
+4. Be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
