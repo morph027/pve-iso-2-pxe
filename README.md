@@ -17,7 +17,7 @@
             menu label Proxmox $version
             linux proxmox/$version/linux26
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=524288
-            initrd proxmox/$version/initrd.img splash=verbose
+            initrd proxmox/$version/initrd.iso.img splash=verbose
     ```
 
 4. Be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
