@@ -14,18 +14,18 @@
 2. copy/move ```linux26``` and ```initrd.iso.img``` to this directory
 3. add the following lines to your PXE config file (mind the important parameter *ramdisk_size* or the initrd won't fit into default memory):
 
-```
-label proxmox-install
-        menu label Install Proxmox
-        linux proxmox/$version/linux26
-        append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
-        initrd proxmox/$version/initrd.iso.img splash=verbose
-
-label proxmox-debug-install
-        menu label Install Proxmox (Debug Mode)
-        linux proxmox/$version/linux26
-        append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug
-        initrd proxmox/$version/initrd.iso.img splash=verbose
-```
+    ```
+    label proxmox-install
+            menu label Install Proxmox
+            linux proxmox/$version/linux26
+            append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
+            initrd proxmox/$version/initrd.iso.img splash=verbose
+    
+    label proxmox-debug-install
+            menu label Install Proxmox (Debug Mode)
+            linux proxmox/$version/linux26
+            append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug
+            initrd proxmox/$version/initrd.iso.img splash=verbose
+    ```
 
 4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
