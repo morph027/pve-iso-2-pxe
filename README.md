@@ -20,13 +20,13 @@
             menu label Install Proxmox
             linux proxmox/$version/linux26
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
-            initrd proxmox/$version/initrd.iso.img splash=verbose
+            initrd proxmox/$version/initrd.iso.img
     
     label proxmox-debug-install
             menu label Install Proxmox (Debug Mode)
             linux proxmox/$version/linux26
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug
-            initrd proxmox/$version/initrd.iso.img splash=verbose
+            initrd proxmox/$version/initrd.iso.img
     ```
 
 4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
