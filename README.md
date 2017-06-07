@@ -7,12 +7,12 @@
 ## Preparation
 
 1. download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads) into a folder somewhere (e.g. ```/tmp/pve-iso```)
-2. run the script ```pve-iso-2-pxe.sh``` with the folder containing the ISO file as parameter (you need to be root or sudo for the loop mount)
-3. the ```linux26``` and ```initrd.iso.img``` (including ISO) will copied to sub-directory ```pxeboot```
+2. run the script ```pve-iso-2-pxe.sh``` with the path to the ISO file as parameter (you need to be root or sudo for the loop mount)
+3. the ```linux26``` and ```initrd.iso.img``` (including ISO) will copied to the sub-directory ```pxeboot```
 
 ## PXE
 
-1. on you PXE server, create a directory *proxmox/$version* in your PXE root directory (e.g. */var/lib/tftpboot/* or */srv/pxe/*)
+1. on your PXE server, create a directory *proxmox/$version* in your PXE root directory (e.g. */var/lib/tftpboot/* or */srv/pxe/*)
 2. copy/move ```linux26``` and ```initrd.iso.img``` to this directory
 3. add the following lines to your PXE config file (mind the important parameter *ramdisk_size* or the initrd won't fit into default memory):
 
