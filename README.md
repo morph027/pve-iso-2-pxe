@@ -35,11 +35,11 @@
 ## iPXE
 
 1. copy/move ```linux26``` and ```initrd.iso.img``` to the root of your webserver (e.g. */var/www/*)
-2. mofiy the serverip in the following ipxe bootscripct:
+2. mofiy the ip adress of the server in the following ipxe bootscripct according to your setup:
     ```
     #!ipxe
     dhcp
-    set serverip 192.168.1.1
+    set serverip 192.168.1.1 //Modify this to match the ip adress or domain of your webserver
     menu Please choose an operating system to boot
         item normal Install Proxmox
         item debug Install Proxmox (Debug Mode)
