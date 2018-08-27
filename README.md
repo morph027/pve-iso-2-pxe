@@ -1,5 +1,6 @@
 # Create PXE bootable Proxmox installation
 
+* 2018-08-27: successfully pxe-installed 5.2
 * 2017-07-11: successfully pxe-installed 5.0 (despite #1)
 * 2017-06-07: successfully ipxe-installed 4.4
 * 2016-12-13: successfully pxe-installed 4.4
