@@ -47,10 +47,10 @@
         item debug Install Proxmox (Debug Mode)
     choose --default normal --timeout 5000 target && goto ${target}
     :debug
-        kernel http://${serverip}/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug
+        kernel http://${serverip}/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug initrd=initrd.iso.img
         goto init
     :normal
-        kernel http://${serverip}/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
+        kernel http://${serverip}/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent initrd=initrd.iso.img
         goto init
     :init
     initrd http://${serverip}/initrd.iso.img
