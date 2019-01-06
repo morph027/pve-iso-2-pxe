@@ -12,7 +12,7 @@
 2. run the script ```pve-iso-2-pxe.sh``` with the path to the ISO file as parameter (you need to be root or sudo for the loop mount)
 3. the ```linux26``` and ```initrd.iso.img``` (including ISO) will copied to the sub-directory ```pxeboot```
 
-## PXE
+## PXE (TFTP)
 
 1. on your PXE server, create a directory *proxmox/$version* in your PXE root directory (e.g. */var/lib/tftpboot/* or */srv/pxe/*)
 2. copy/move ```linux26``` and ```initrd.iso.img``` to this directory
@@ -34,6 +34,26 @@
 
 4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
 
+## PXE (HTTP) copy lpxelinux.0 as pxelinux.0
+
+1. on your PXE server, start an HTTP server like Apache/NGINX/etc.
+2. Create a directory *proxmox/$version* in your HTTP root directory (e.g. */var/www/html/proxmox/$version*)
+2. copy/move ```linux26``` and ```initrd.iso.img``` to this directory
+3. add the following lines to your PXE config file (mind the important parameter *ramdisk_size* or the initrd won't fit into default memory):
+    ```
+    label proxmox-install-http
+            menu label Install Proxmox HTTP
+            linux http://$webserver_ip/$http_path/proxmox/$version/linux26
+            initrd http://$webserver_ip/$http_path/proxmox/$version/initrd.iso.img
+            append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
+            
+    label proxmox-install-http
+            menu label Install Proxmox HTTP (Debug)
+            linux http://$webserver_ip/$http_path/proxmox/$version/linux26
+            initrd http://$webserver_ip/$http_path/proxmox/$version/initrd.iso.img
+            append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent proxdebug
+    ```
+    
 ## iPXE
 
 1. copy/move ```linux26``` and ```initrd.iso.img``` to the root of your webserver (e.g. */var/www/*)
