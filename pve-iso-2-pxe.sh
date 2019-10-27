@@ -17,7 +17,7 @@ if [ ! $# -eq 1 ]; then
   exit
 fi
 
-BASEDIR=${1:-./}
+BASEDIR="$(dirname "$(readlink -f "$1")")"
 pushd $BASEDIR >/dev/null
 
 [ -L "proxmox.iso" ] && rm proxmox.iso &>/dev/null
