@@ -14,7 +14,7 @@
 2. run the script ```pve-iso-2-pxe.sh``` with the path to the ISO file as parameter (you need to be root or sudo for the loop mount)
 3. the ```linux26``` and ```initrd.iso.img``` (including ISO) will copied to the sub-directory ```pxeboot```
 
-## iPXE (recommended)
+## [iPXE](https://ipxe.org/) (recommended)
 
 1. copy/move ```linux26``` and ```initrd.iso.img``` to a directory of your webserver (e.g. */var/www/proxmox/${version}*)
 2. mofiy the ip adress of the server in the following ipxe bootscripct according to your setup:
