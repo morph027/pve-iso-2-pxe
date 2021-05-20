@@ -14,11 +14,11 @@ EOF
 
 if [ ! $# -eq 1 ]; then
   echo -ne "Usage: (sudo) pve-iso-2-pxe.sh /path/to/pve.iso\n\n"
-  exit
+  exit 1
 fi
 
 BASEDIR="$(dirname "$(readlink -f "$1")")"
-pushd $BASEDIR >/dev/null
+pushd "$BASEDIR" >/dev/null || exit 1
 
 [ -L "proxmox.iso" ] && rm proxmox.iso &>/dev/null
 
@@ -35,7 +35,7 @@ if [ ! -f "proxmox.iso" ]; then
     exit 2
 fi
 [ -d pxeboot ] || mkdir pxeboot
-pushd pxeboot >/dev/null
+pushd pxeboot >/dev/null || exit 1
 [ -d mnt ] || mkdir  mnt
 echo "Mounting iso image..." 
 if ! mount -t iso9660 -o ro,loop ../proxmox.iso mnt/ ; then
@@ -56,12 +56,12 @@ echo "Unmounted iso, extracting contents of initrd..."
 gzip -d -S ".img" ./initrd.orig.img
 rm -rf initrd.tmp
 mkdir  initrd.tmp
-pushd initrd.tmp >/dev/null
+pushd initrd.tmp >/dev/null || exit 1
 echo "Added iso, creating and compressing the new initrd..." 
 cpio -i -d < ../initrd.orig 2>/dev/null
 cp ../../proxmox.iso proxmox.iso
 (find . | cpio -H newc -o > ../initrd.iso) 2>/dev/null
-popd 2>/dev/null
+popd 2>/dev/null || exit 1
 rm -f initrd.iso.img
 gzip -9 -S ".img" initrd.iso
 
@@ -72,5 +72,5 @@ rm -rf initrd.tmp
 rm  ./initrd.orig
 
 echo "Done! Look in $PWD for pxeboot files." 
-popd 2>/dev/null
-popd 2>/dev/null
+popd 2>/dev/null || true  # don't care if these pops fail
+popd 2>/dev/null || true
