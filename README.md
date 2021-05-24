@@ -11,7 +11,7 @@
 ## Preparation
 
 1. download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads) into a folder somewhere (e.g. ```/tmp/pve-iso```)
-2. run the script ```pve-iso-2-pxe.sh``` with the path to the ISO file as parameter (you need to be root or sudo for the loop mount)
+2. run the script ```pve-iso-2-pxe.sh``` with the path to the ISO file as parameter
 3. the ```linux26``` and ```initrd.iso.img``` (including ISO) will copied to the sub-directory ```pxeboot```
 
 ## [iPXE](https://ipxe.org/) (recommended)

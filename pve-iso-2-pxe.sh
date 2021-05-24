@@ -13,7 +13,7 @@ cat << EOF
 EOF
 
 if [ ! $# -eq 1 ]; then
-  echo -ne "Usage: (sudo) pve-iso-2-pxe.sh /path/to/pve.iso\n\n"
+  echo -ne "Usage: bash pve-iso-2-pxe.sh /path/to/pve.iso\n\n"
   exit 1
 fi
 
@@ -36,23 +36,12 @@ if [ ! -f "proxmox.iso" ]; then
 fi
 [ -d pxeboot ] || mkdir pxeboot
 pushd pxeboot >/dev/null || exit 1
-[ -d mnt ] || mkdir  mnt
-echo "Mounting iso image..." 
-if ! mount -t iso9660 -o ro,loop ../proxmox.iso mnt/ ; then
-    echo "Failed to mount iso image, aborting." 
-    exit 3
-fi
 echo "copying kernel..."
-cp  mnt/boot/linux26 .
-rm -f  initrd.orig initrd.orig.img initrd.img
+isoinfo -i ../proxmox.iso -R -x /boot/linux26 > linux26 || exit 3
 echo "copying initrd..."
-cp  mnt/boot/initrd.img initrd.orig.img
-if ! umount  mnt ; then
-    echo "Couldn't unmount iso image, aborting."
-    exit 4
-fi
+isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > initrd.orig.img || exit 4
 
-echo "Unmounted iso, extracting contents of initrd..." 
+echo "extracting contents of initrd..." 
 gzip -d -S ".img" ./initrd.orig.img
 rm -rf initrd.tmp
 mkdir  initrd.tmp
