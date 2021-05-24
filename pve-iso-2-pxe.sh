@@ -34,32 +34,18 @@ if [ ! -f "proxmox.iso" ]; then
     echo "Add /path/to/iso_dir to the commandline." 
     exit 2
 fi
+
 [ -d pxeboot ] || mkdir pxeboot
+
 pushd pxeboot >/dev/null || exit 1
-echo "copying kernel..."
+echo "extracting kernel..."
 isoinfo -i ../proxmox.iso -R -x /boot/linux26 > linux26 || exit 3
-echo "copying initrd..."
-isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > initrd.orig.img || exit 4
+echo "extracting initrd..."
+isoinfo -i ../proxmox.iso -R -x /boot/initrd.img | gzip -d > initrd || exit 4
+echo "adding iso file ..." 
+echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
+popd >/dev/null 2>&1 || exit 1
 
-echo "extracting contents of initrd..." 
-gzip -d -S ".img" ./initrd.orig.img
-rm -rf initrd.tmp
-mkdir  initrd.tmp
-pushd initrd.tmp >/dev/null || exit 1
-echo "Added iso, creating and compressing the new initrd..." 
-cpio -i -d < ../initrd.orig 2>/dev/null
-cp ../../proxmox.iso proxmox.iso
-(find . | cpio -H newc -o > ../initrd.iso) 2>/dev/null
-popd 2>/dev/null || exit 1
-rm -f initrd.iso.img
-gzip -9 -S ".img" initrd.iso
-
-# Now clean up temp stuff
-echo "Cleaning up temp files..." 
-rmdir  mnt
-rm -rf initrd.tmp
-rm  ./initrd.orig
-
-echo "Done! Look in $PWD for pxeboot files." 
-popd 2>/dev/null || true  # don't care if these pops fail
-popd 2>/dev/null || true
+echo "Finished! pxeboot files can be found in ${PWD}." 
+popd >/dev/null 2>&1 || true  # don't care if these pops fail
+popd >/dev/null 2>&1 || true
