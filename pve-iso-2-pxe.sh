@@ -41,7 +41,17 @@ pushd pxeboot >/dev/null || exit 1
 echo "extracting kernel..."
 isoinfo -i ../proxmox.iso -R -x /boot/linux26 > linux26 || exit 3
 echo "extracting initrd..."
-isoinfo -i ../proxmox.iso -R -x /boot/initrd.img | gzip -d > initrd || exit 4
+isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > /tmp/initrd.img
+mimetype="$(file --mime-type --brief /tmp/initrd.img)"
+case "${mimetype##*/}" in
+  "zstd")
+    decompress="zstd -d /tmp/initrd.img -o initrd"
+    ;;
+  "gzip")
+    decompress="gzip -d /tmp/initrd.img initrd"
+    ;;
+esac
+$decompress || exit 4
 echo "adding iso file ..." 
 echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
 popd >/dev/null 2>&1 || exit 1
