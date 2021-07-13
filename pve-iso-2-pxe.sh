@@ -48,7 +48,7 @@ case "${mimetype##*/}" in
     decompress="zstd -d /tmp/initrd.img -o initrd"
     ;;
   "gzip")
-    decompress="gzip -d /tmp/initrd.img initrd"
+    decompress="gzip -S img -d /tmp/initrd.img initrd"
     ;;
 esac
 $decompress || exit 4
