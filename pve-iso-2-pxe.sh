@@ -48,12 +48,17 @@ case "${mimetype##*/}" in
     decompress="zstd -d /tmp/initrd.img -o initrd"
     ;;
   "gzip")
-    decompress="gzip -S img -d /tmp/initrd.img initrd"
+    decompress="gzip -S img -d /tmp/initrd.img"
+    ;;
+  *)
+    echo "unable to detect initrd compression method, exiting"
+    exit 1
     ;;
 esac
 $decompress || exit 4
 echo "adding iso file ..." 
-echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
+echo "../proxmox.iso" | cpio -L -H newc -o >> /tmp/initrd. || exit 5
+mv /tmp/initrd. initrd
 popd >/dev/null 2>&1 || exit 1
 
 echo "Finished! pxeboot files can be found in ${PWD}." 
