@@ -47,6 +47,9 @@ case "${mimetype##*/}" in
   "zstd")
     decompress="zstd -d /tmp/initrd.img -o initrd"
     ;;
+  "x-zstd")
+    decompress="zstd -d /tmp/initrd.img -o initrd"
+    ;;
   "gzip")
     decompress="gzip -S img -d /tmp/initrd.img"
     ;;
@@ -57,8 +60,8 @@ case "${mimetype##*/}" in
 esac
 $decompress || exit 4
 echo "adding iso file ..." 
-echo "../proxmox.iso" | cpio -L -H newc -o >> /tmp/initrd. || exit 5
-mv /tmp/initrd. initrd
+echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
+rm /tmp/initrd.img
 popd >/dev/null 2>&1 || exit 1
 
 echo "Finished! pxeboot files can be found in ${PWD}." 

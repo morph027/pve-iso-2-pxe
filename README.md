@@ -12,6 +12,7 @@
 ## Preparation
 
 * download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads) into a folder somewhere (e.g. `~/Downloads/proxmox-ve_6.4-1.iso`)
+* be shure to have `zstd gzip genisoimage` packages installed.
 * run the script `pve-iso-2-pxe.sh` with the path to the ISO file as parameter
   * `bash pve-iso-2-pxe.sh ~/Downloads/proxmox-ve_6.4-1.iso`
 * the `linux26` and `initrd` (including ISO) will copied to the sub-directory `pxeboot` located relative to the iso file (e.g. `~/Downloads/pxeboot`)
