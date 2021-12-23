@@ -11,7 +11,7 @@
 
 ## Preparation
 
-* install `zstd gzip genisoimage` packages
+* install `cpio file zstd gzip genisoimage` packages
 * download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads) into a folder somewhere (e.g. `~/Downloads/proxmox-ve_6.4-1.iso`)
 * run the script `pve-iso-2-pxe.sh` with the path to the ISO file as parameter
   * `bash pve-iso-2-pxe.sh ~/Downloads/proxmox-ve_6.4-1.iso`

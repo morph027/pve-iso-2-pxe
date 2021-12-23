@@ -45,17 +45,17 @@ isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > /tmp/initrd.img
 mimetype="$(file --mime-type --brief /tmp/initrd.img)"
 case "${mimetype##*/}" in
   "zstd"|"x-zstd")
-    decompress="zstd -d /tmp/initrd.img -o initrd"
+    decompress="zstd -d /tmp/initrd.img -c"
     ;;
   "gzip")
-    decompress="gzip -S img -d /tmp/initrd.img -c > initrd"
+    decompress="gzip -S img -d /tmp/initrd.img -c"
     ;;
   *)
     echo "unable to detect initrd compression method, exiting"
     exit 1
     ;;
 esac
-$decompress || exit 4
+$decompress > initrd || exit 4
 echo "adding iso file ..." 
 echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
 popd >/dev/null 2>&1 || exit 1
