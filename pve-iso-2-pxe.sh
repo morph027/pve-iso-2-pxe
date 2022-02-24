@@ -47,7 +47,7 @@ case "${mimetype##*/}" in
   "zstd"|"x-zstd")
     decompress="zstd -d /tmp/initrd.img -c"
     ;;
-  "gzip")
+  "gzip"|"x-gzip")
     decompress="gzip -S img -d /tmp/initrd.img -c"
     ;;
   *)
