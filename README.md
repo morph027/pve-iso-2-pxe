@@ -1,6 +1,7 @@
 # Create PXE bootable Proxmox installation
 
 * 2022-08-18: successfully pxe-installed 7.2
+* 2021-07-09: successfully pxe-installed PBS 2.2-1
 * 2021-07-09: successfully pxe-installed 7.0
 * 2020-10-26: successfully pxe-installed 6.2
 * 2019-12-30: successfully pxe-installed 6.1
