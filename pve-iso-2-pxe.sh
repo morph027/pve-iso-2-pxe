@@ -23,25 +23,37 @@ pushd "$BASEDIR" >/dev/null || exit 1
 [ -L "proxmox.iso" ] && rm proxmox.iso &>/dev/null
 
 for ISO in *.iso; do
-    if [ "$ISO" = "*.iso" ]; then continue; fi
-    if [ "$ISO" = "proxmox.iso" ]; then continue; fi
-    echo "Using ${ISO}..."
-    ln -s "$ISO" proxmox.iso
+  if [ "$ISO" = "*.iso" ]; then continue; fi
+  if [ "$ISO" = "proxmox.iso" ]; then continue; fi
+  echo "Using ${ISO}..."
+  ln -s "$ISO" proxmox.iso
 done
 
 if [ ! -f "proxmox.iso" ]; then
-    echo "Couldn't find a proxmox iso, aborting." 
-    echo "Add /path/to/iso_dir to the commandline." 
-    exit 2
+  echo "Couldn't find a proxmox iso, aborting."
+  echo "Add /path/to/iso_dir to the commandline."
+  exit 2
 fi
 
+rm -rf pxeboot
 [ -d pxeboot ] || mkdir pxeboot
 
 pushd pxeboot >/dev/null || exit 1
 echo "extracting kernel..."
-isoinfo -i ../proxmox.iso -R -x /boot/linux26 > linux26 || exit 3
+if [ -x $(which isoinfo) ] ; then
+  isoinfo -i ../proxmox.iso -R -x /boot/linux26 > linux26 || exit 3
+else
+  7z x ../proxmox.iso boot/linux26 -o/tmp || exit 3
+  mv /tmp/boot/linux26 /tmp/
+fi
 echo "extracting initrd..."
-isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > /tmp/initrd.img
+if [ -x $(which isoinfo) ] ; then
+  isoinfo -i ../proxmox.iso -R -x /boot/initrd.img > /tmp/initrd.img
+else
+  7z x ../proxmox.iso boot/initrd.img -o/tmp
+  mv /tmp/boot/initrd.img /tmp/
+fi
+
 mimetype="$(file --mime-type --brief /tmp/initrd.img)"
 case "${mimetype##*/}" in
   "zstd"|"x-zstd")
@@ -56,10 +68,14 @@ case "${mimetype##*/}" in
     ;;
 esac
 $decompress > initrd || exit 4
-echo "adding iso file ..." 
-echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
+echo "adding iso file ..."
+if [ -x $(which cpio) ] ; then
+  echo "../proxmox.iso" | cpio -L -H newc -o >> initrd || exit 5
+else
+  7z x "../proxmox.iso" >> initrd || exit 5
+fi
 popd >/dev/null 2>&1 || exit 1
 
-echo "Finished! pxeboot files can be found in ${PWD}." 
+echo "Finished! pxeboot files can be found in ${PWD}."
 popd >/dev/null 2>&1 || true  # don't care if these pops fail
 popd >/dev/null 2>&1 || true
