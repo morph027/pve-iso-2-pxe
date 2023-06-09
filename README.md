@@ -24,11 +24,11 @@
 ## [iPXE](https://ipxe.org/) (recommended)
 
 1. copy/move ```linux26``` and ```initrd``` to a directory of your webserver (e.g. */var/www/proxmox/${version}*)
-2. mofiy the ip adress of the server in the following ipxe bootscripct according to your setup:
+2. mofiy the ip address of the server in the following ipxe bootscript according to your setup:
     ```
     #!ipxe
     dhcp
-    set serverip http://192.168.1.1 //Modify this to match the ip adress or domain of your webserver
+    set serverip http://192.168.1.1 //Modify this to match the ip address or domain of your webserver
     set pveversion 6.2 //Modify this to match the version you want to install
     set opts "vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet initrd=initrd"
     menu Please choose an operating system to boot
