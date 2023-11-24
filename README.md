@@ -1,93 +1,142 @@
-# Create PXE bootable Proxmox installation
+# PVE ISO to PXE
 
-* 2023-11-24: successfully pxe-installed 8.1
-* 2023-06-22: successfully pxe-installed 8.0
-* 2023-03-23: successfully pxe-installed 7.4
-* 2022-11-22: successfully pxe-installed 7.3
-* 2022-08-18: successfully pxe-installed 7.2
-* 2021-07-09: successfully pxe-installed PBS 2.2-1
-* 2021-07-09: successfully pxe-installed 7.0
-* 2020-10-26: successfully pxe-installed 6.2
-* 2019-12-30: successfully pxe-installed 6.1
-* 2018-08-27: successfully pxe-installed 5.2
-* 2017-07-11: successfully pxe-installed 5.0 (despite #1)
-* 2017-06-07: successfully ipxe-installed 4.4
-* 2016-12-13: successfully pxe-installed 4.4
-* 2016-09-27: successfully pxe-installed 4.3
+Script to extract files from Proxmox VE ISO file needed to PXE boot
 
-## Preparation
+## Instructions
 
-* install `cpio file zstd gzip genisoimage` packages
-* download **Proxmox VE ISO Installer** from [Proxmox](http://proxmox.com/downloads) into a folder somewhere (e.g. `~/Downloads/proxmox-ve_6.4-1.iso`)
-* run the script `pve-iso-2-pxe.sh` with the path to the ISO file as parameter
-  * `bash pve-iso-2-pxe.sh ~/Downloads/proxmox-ve_6.4-1.iso`
-* the `linux26` and `initrd` (including ISO) will copied to the sub-directory `pxeboot` located relative to the iso file (e.g. `~/Downloads/pxeboot`)
+1. Install dependencies (optional)
 
-## [iPXE](https://ipxe.org/) (recommended)
+    ```
+    apt-get install -y cpio file zstd gzip genisoimage
+    ```
 
-1. copy/move ```linux26``` and ```initrd``` to a directory of your webserver (e.g. */var/www/proxmox/${version}*)
-2. mofiy the ip address of the server in the following ipxe bootscript according to your setup:
+2. Clone repository
+
+    ```
+    git clone https://github.com/morph027/pve-iso-2-pxe.git
+    cd pve-iso-2-pxe
+    ```
+
+2. Download [Proxmox VE ISO](https://www.proxmox.com/en/downloads)
+
+    ```
+    wget https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso/proxmox-ve-8-1-iso-installer
+    ```
+
+3. Execute Script
+
+    ```
+    -> bash pve-iso-2-pxe.sh proxmox-ve_8.1-1.iso
+
+    #########################################################################################################
+    # Create PXE bootable Proxmox image including ISO                                                       #
+    #                                                                                                       #
+    # Author: mrballcb @ Proxmox Forum (06-12-2012)                                                         #
+    # Thread: http://forum.proxmox.com/threads/8484-Proxmox-installation-via-PXE-solution?p=55985#post55985 #
+    # Modified: morph027 @ Proxmox Forum (23-02-2015) to work with 3.4                                      #
+    #########################################################################################################
+
+    Using proxmox-ve_8.1-1.iso...
+    extracting kernel...
+    extracting initrd...
+    adding iso file ...
+    2524621 blocks
+    Finished! pxeboot files can be found in /root/pve-iso-2-pxe.
+    ```
+
+5. Verify `initrd` and `linux26` files are in `pxeboot` directory
+
+    ```
+    -> ls pxeboot/
+    initrd  linux26
+    ```
+
+### Methods
+
+#### iPXE (recommended)
+
+1. Copy `initrd` and `linux26` to a directory on a web server
+2. Modify `server variable` variables in iPXE script below to be an IP or hostname of web server
+
     ```
     #!ipxe
+
     dhcp
-    set serverip http://192.168.1.1 //Modify this to match the ip address or domain of your webserver
-    set pveversion 6.2 //Modify this to match the version you want to install
+    set webserver http://192.168.1.1
+
     set opts "vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet initrd=initrd"
     menu Please choose an operating system to boot
         item normal Install Proxmox
         item debug Install Proxmox (Debug Mode)
     choose --default normal --timeout 5000 target && goto ${target}
     :debug
-        set kernel "${webserver}/proxmox/${pveversion}/linux26 ${opts} splash=verbose proxdebug"
+        set kernel "${webserver}/proxmox/linux26 ${opts} splash=verbose proxdebug"
         goto init
     :normal
-        set kernel "${webserver}/proxmox/${pveversion}/linux26 ${opts} splash=silent"
+        set kernel "${webserver}/proxmox/linux26 ${opts} splash=silent"
         goto init
     :init
-    initrd ${webserver}/proxmox/${pveversion}/initrd
+    initrd ${webserver}/proxmox/initrd
     chain ${kernel}
     ```
-3. embed the bootscript into your ipxe build or start the script from ipxe using the chain command
-4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
 
-## PXE (HTTP - faster)
+3. Embed the iPXE script into iPXE iso or start it from iPXE using chain command
 
-1. on your PXE server, use lpxelinux.0 as pxelinux.0 (overwrite or set filename via DHCP option)
-2. copy/move ```linux26``` and ```initrd``` to a directory of your webserver (e.g. */var/www/proxmox/${version}*)
-3. add the following lines to your PXE config file (mind the important parameter *ramdisk_size* or the initrd won't fit into default memory):
+#### PXE (HTTP)
+
+1. Copy `initrd` and `linux26` to a directory on a web server
+2. Add the following lines to your PXE config file
+
+    **Note**: Modify `webserver` to be an IP or hostname of web server
+
     ```
     label proxmox-install-http
             menu label Install Proxmox HTTP
-            linux http://${webserver}/proxmox/${version}/linux26
-            initrd http://${webserver}/proxmox/${version}/initrd
+            linux http://${webserver}/proxmox/linux26
+            initrd http://${webserver}/proxmox/initrd
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
             
     label proxmox-install-http
             menu label Install Proxmox HTTP (Debug)
-            linux http://${webserver}/proxmox/${version}/linux26
-            initrd http://${webserver}/proxmox/${version}/initrd
+            linux http://${webserver}/proxmox/linux26
+            initrd http://${webserver}/proxmox/initrd
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent proxdebug
     ```
-4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
 
-## PXE (TFTP)
+#### PXE (TFTP)
 
-1. on your PXE server, create a directory *proxmox/${version}* in your PXE root directory (e.g. */var/lib/tftpboot/* or */srv/pxe/*)
-2. copy/move ```linux26``` and ```initrd``` to this directory
-3. add the following lines to your PXE config file (mind the important parameter *ramdisk_size* or the initrd won't fit into default memory):
+1. Copy `initrd` and `linux26` to a directory on a TFTP server
+2. Add the following lines to your PXE config file
 
     ```
     label proxmox-install
             menu label Install Proxmox
-            linux proxmox/${version}/linux26
+            linux proxmox/linux26
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent
-            initrd proxmox/${version}/initrd
+            initrd proxmox/initrd
     
     label proxmox-debug-install
             menu label Install Proxmox (Debug Mode)
-            linux proxmox/${version}/linux26
+            linux proxmox/linux26
             append vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug
-            initrd proxmox/${version}/initrd
+            initrd proxmox/initrd
     ```
 
-4. be happy and think about [supporting](http://proxmox.com/proxmox-ve/support) the great guys at Proxmox!
+### Tested Versions
+
+[Think about supporting the great guys at Proxmox](http://proxmox.com/proxmox-ve/support)
+
+* 11-24-2023: Proxmox VE 8.1
+* 06-22-2023: Proxmox VE 8.0
+* 03-23-2023: Proxmox VE 7.4
+* 11-22-2022: Proxmox VE 7.3
+* 08-18-2022: Proxmox VE 7.2
+* 07-09-2021: Proxmox Backup Server 2.2-1
+* 07-09-2021: Proxmox VE 7.0
+* 10-26-2020: Proxmox VE 6.2
+* 12-30-2019: Proxmox VE 6.1
+* 08-27-2018: Proxmox VE 5.2
+* 07-11-2017: Proxmox VE 5.0
+* 06-07-2017: Proxmox VE 4.4
+* 12-13-2016: Proxmox VE 4.4
+* 09-27-2016: Proxmox VE 4.3
