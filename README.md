@@ -1,5 +1,6 @@
 # Create PXE bootable Proxmox installation
 
+* 2023-11-24: successfully pxe-installed 8.1
 * 2023-06-22: successfully pxe-installed 8.0
 * 2023-03-23: successfully pxe-installed 7.4
 * 2022-11-22: successfully pxe-installed 7.3
